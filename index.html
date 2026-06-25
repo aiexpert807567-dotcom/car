@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ferrari — Engineered for Precision</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400&display=swap');
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: #000;
+  overflow-x: hidden;
+  scroll-behavior: auto;
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  color: #E8E0D8;
+  cursor: none; /* hide default cursor — tyre takes over */
+}
+
+#scroll-track {
+  height: 800vh;
+  position: relative;
+}
+
+#stage {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  overflow: hidden;
+}
+
+#ferrari-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  z-index: 1;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 15%),
+    linear-gradient(to top,    rgba(0,0,0,0.5) 0%, transparent 15%);
+}
+
+nav {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 48px;
+  pointer-events: none;
+}
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 5px;
+  color: #E8E0D8;
+}
+.nav-logo span { color: #D40000; }
+
+/* Phase labels */
+.phase-label {
+  position: absolute;
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.lbl-tag {
+  font-size: 9px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: #D40000;
+  margin-bottom: 8px;
+}
+.lbl-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  letter-spacing: 2px;
+  line-height: 1;
+  color: #E8E0D8;
+}
+.lbl-sub {
+  margin-top: 6px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #888;
+}
+#lbl-1 { bottom: 15vh; left: 5vw; }
+#lbl-2 { top: 15vh;    right: 5vw; text-align: right; }
+#lbl-3 { bottom: 15vh; right: 5vw; text-align: right; }
+#lbl-4 { top: 15vh;    left: 5vw; }
+
+#progress-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: rgba(255,255,255,0.07);
+  z-index: 10;
+}
+#progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(to right, #8B0000, #D40000);
+}
+
+/* CTA overlay */
+#cta-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.65) 100%);
+  transition: opacity 0.8s ease;
+}
+#cta-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.cta-glow {
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,0,0,0.18) 0%, transparent 70%);
+  pointer-events: none;
+  animation: glowPulse 4s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%,100% { transform: scale(1); opacity: 0.7; }
+  50%      { transform: scale(1.12); opacity: 1; }
+}
+.cta-inner {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+.cta-line {
+  width: 50px; height: 1px;
+  background: #D40000;
+  margin: 0 auto 28px;
+}
+.cta-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(60px, 10vw, 128px);
+  letter-spacing: 3px;
+  line-height: 0.88;
+  background: linear-gradient(135deg, #fff 0%, #999 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 52px;
+}
+.cta-btn {
+  display: inline-block;
+  padding: 18px 60px;
+  border: 1px solid #D40000;
+  font-size: 11px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: #E8E0D8;
+  text-decoration: none;
+  cursor: none;
+  background: transparent;
+  position: relative;
+  overflow: hidden;
+  transition: color 0.4s;
+}
+.cta-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #D40000;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.16,1,0.3,1);
+}
+.cta-btn:hover::before { transform: scaleX(1); }
+.cta-btn:hover { color: #fff; }
+.cta-btn span { position: relative; z-index: 1; }
+
+#scroll-hint {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #888;
+  opacity: 1;
+  transition: opacity 0.5s;
+}
+.hint-line {
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, #D40000, transparent);
+  animation: hintPulse 1.8s ease-in-out infinite;
+}
+@keyframes hintPulse {
+  0%,100% { opacity: 0.3; }
+  50%      { opacity: 1; }
+}
+
+/* ─── TYRE CURSOR CANVAS ─── */
+#tyre-cursor {
+  position: fixed;
+  top: 0; left: 0;
+  width: 48px; height: 48px;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+  /* CSS handles position + steering rotation */
+  transform-origin: center center;
+}
+
+@media (max-width: 600px) {
+  nav { padding: 18px 24px; }
+  .lbl-name { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+
+<div id="scroll-track"></div>
+
+<div id="stage">
+  <video id="ferrari-video" muted playsinline preload="auto">
+    <source src="https://raw.githubusercontent.com/aiexpert807567-dotcom/car/main/Ferrari_disassembles_exploded_view_1080p_202606241151.mp4" type="video/mp4">
+  </video>
+
+  <div class="vignette"></div>
+
+  <nav>
+    <div class="nav-logo"><span>F</span>ERRARI</div>
+  </nav>
+
+  <div class="phase-label" id="lbl-1">
+    <div class="lbl-tag">01 · Chassis</div>
+    <div class="lbl-name">Monocoque<br>Structure</div>
+    <div class="lbl-sub">Aluminium Spaceframe</div>
+  </div>
+  <div class="phase-label" id="lbl-2">
+    <div class="lbl-tag">02 · Bodywork</div>
+    <div class="lbl-name">Carbon Fibre<br>Composite</div>
+    <div class="lbl-sub">Hood · Doors · Bumpers</div>
+  </div>
+  <div class="phase-label" id="lbl-3">
+    <div class="lbl-tag">03 · Powertrain</div>
+    <div class="lbl-name">V8 Twin<br>Turbo · 710hp</div>
+    <div class="lbl-sub">Type F154 · +Y Extraction</div>
+  </div>
+  <div class="phase-label" id="lbl-4">
+    <div class="lbl-tag">04 · Suspension</div>
+    <div class="lbl-name">Adaptive<br>Magnetic Ride</div>
+    <div class="lbl-sub">4 Wheels · ±X Axis Separation</div>
+  </div>
+
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+
+  <div id="scroll-hint">
+    <div class="hint-line"></div>
+    <span>Scroll</span>
+  </div>
+
+  <div id="cta-overlay">
+    <div class="cta-glow"></div>
+    <div class="cta-inner">
+      <div class="cta-line"></div>
+      <h2 class="cta-title">MAKE IT<br>YOURS</h2>
+      <a href="#" class="cta-btn"><span>Configure Your Ferrari</span></a>
+    </div>
+  </div>
+</div>
+
+<!-- Tyre cursor canvas — side view, 48×48 -->
+<canvas id="tyre-cursor" width="48" height="48"></canvas>
+
+<script>
+/* ══════════════════════════════════════════════════
+   TYRE CURSOR — side-view, steers & rolls realistically
+══════════════════════════════════════════════════ */
+(function () {
+  const SIZE = 48;
+  const canvas = document.getElementById('tyre-cursor');
+  const ctx = canvas.getContext('2d');
+  const CX = SIZE / 2, CY = SIZE / 2;
+  const TR = 21;  // tyre outer radius
+  const RR = 13;  // rim radius
+  const HR = 4.5; // hub radius
+
+  let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+  let curX = mouseX, curY = mouseY;
+  let prevCX = curX, prevCY = curY;
+  let spin = 0;
+  let steer = 0, targetSteer = 0;
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function drawTyre(spin) {
+    ctx.clearRect(0, 0, SIZE, SIZE);
+
+    /* 1 – RUBBER BODY */
+    const rg = ctx.createRadialGradient(CX-5, CY-5, 2, CX, CY, TR);
+    rg.addColorStop(0,   '#3a3a3a');
+    rg.addColorStop(0.55,'#181818');
+    rg.addColorStop(1,   '#060606');
+    ctx.beginPath(); ctx.arc(CX, CY, TR, 0, Math.PI*2);
+    ctx.fillStyle = rg; ctx.fill();
+
+    /* sidewall ring */
+    ctx.beginPath(); ctx.arc(CX, CY, TR, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(85,85,85,0.65)'; ctx.lineWidth = 1.1; ctx.stroke();
+    ctx.beginPath(); ctx.arc(CX, CY, TR-3, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(25,25,25,0.9)'; ctx.lineWidth = 0.7; ctx.stroke();
+
+    /* 2 – TREAD BLOCKS (spin with rolling) */
+    ctx.save(); ctx.translate(CX, CY); ctx.rotate(spin);
+    const N = 18, ro = TR-0.5, ri = TR-5;
+    for (let i = 0; i < N; i++) {
+      const a0 = (i/N)*Math.PI*2, a1 = ((i+0.6)/N)*Math.PI*2;
+      ctx.beginPath();
+      ctx.arc(0,0,ri,a0,a1); ctx.arc(0,0,ro,a1,a0,true); ctx.closePath();
+      ctx.fillStyle = i%2===0 ? '#2c2c2c' : '#181818'; ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a0)*ri, Math.sin(a0)*ri);
+      ctx.lineTo(Math.cos(a0)*ro, Math.sin(a0)*ro);
+      ctx.strokeStyle='#000'; ctx.lineWidth=0.7; ctx.stroke();
+      /* sipe */
+      const am=(a0+a1)*0.5;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(am-0.05)*ri, Math.sin(am-0.05)*ri);
+      ctx.lineTo(Math.cos(am+0.05)*ro, Math.sin(am+0.05)*ro);
+      ctx.strokeStyle='rgba(0,0,0,0.6)'; ctx.lineWidth=0.5; ctx.stroke();
+    }
+    ctx.restore();
+
+    /* 3 – RIM (spins with tyre) */
+    ctx.save(); ctx.translate(CX, CY); ctx.rotate(spin);
+    const rimG = ctx.createRadialGradient(-3,-3,1, 0,0,RR);
+    rimG.addColorStop(0,   '#e4e4e4');
+    rimG.addColorStop(0.3, '#b8b8b8');
+    rimG.addColorStop(0.7, '#787878');
+    rimG.addColorStop(1,   '#404040');
+    ctx.beginPath(); ctx.arc(0,0,RR,0,Math.PI*2);
+    ctx.fillStyle=rimG; ctx.fill();
+
+    /* 5 spokes */
+    const SP=5;
+    for (let i=0;i<SP;i++) {
+      const sa=(i/SP)*Math.PI*2;
+      const w0=0.2, w1=0.1;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(sa-w0)*(HR+1), Math.sin(sa-w0)*(HR+1));
+      ctx.lineTo(Math.cos(sa-w1)*(RR-1), Math.sin(sa-w1)*(RR-1));
+      ctx.lineTo(Math.cos(sa+w1)*(RR-1), Math.sin(sa+w1)*(RR-1));
+      ctx.lineTo(Math.cos(sa+w0)*(HR+1), Math.sin(sa+w0)*(HR+1));
+      ctx.closePath();
+      const sg=ctx.createLinearGradient(Math.cos(sa)*HR,Math.sin(sa)*HR,Math.cos(sa)*RR,Math.sin(sa)*RR);
+      sg.addColorStop(0,'#d4d4d4'); sg.addColorStop(0.5,'#9a9a9a'); sg.addColorStop(1,'#505050');
+      ctx.fillStyle=sg; ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=0.3; ctx.stroke();
+      /* dark window */
+      const na=((i+1)/SP)*Math.PI*2;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(sa+w0)*(HR+2), Math.sin(sa+w0)*(HR+2));
+      ctx.arc(0,0,RR-2,sa+w0,na-w0);
+      ctx.lineTo(Math.cos(na-w0)*(HR+2), Math.sin(na-w0)*(HR+2));
+      ctx.arc(0,0,HR+2,na-w0,sa+w0,true);
+      ctx.closePath(); ctx.fillStyle='#080808'; ctx.fill();
+    }
+
+    /* rim ring */
+    ctx.beginPath(); ctx.arc(0,0,RR,0,Math.PI*2);
+    ctx.strokeStyle='rgba(210,210,210,0.2)'; ctx.lineWidth=0.7; ctx.stroke();
+
+    /* hub */
+    const hg=ctx.createRadialGradient(-1,-1,0.3, 0,0,HR);
+    hg.addColorStop(0,'#f0f0f0'); hg.addColorStop(1,'#686868');
+    ctx.beginPath(); ctx.arc(0,0,HR,0,Math.PI*2); ctx.fillStyle=hg; ctx.fill();
+    for (let i=0;i<5;i++) {
+      const ba=(i/5)*Math.PI*2;
+      ctx.beginPath(); ctx.arc(Math.cos(ba)*(HR-1.1),Math.sin(ba)*(HR-1.1),0.9,0,Math.PI*2);
+      ctx.fillStyle='#444'; ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(0,0,1.8,0,Math.PI*2); ctx.fillStyle='#D40000'; ctx.fill();
+    ctx.restore();
+
+    /* gloss */
+    const gl=ctx.createRadialGradient(CX-6,CY-6,1,CX-3,CY-3,TR*0.75);
+    gl.addColorStop(0,'rgba(255,255,255,0.09)');
+    gl.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.beginPath(); ctx.arc(CX,CY,TR,0,Math.PI*2); ctx.fillStyle=gl; ctx.fill();
+  }
+
+  drawTyre(0);
+
+  document.addEventListener('mousemove', e => { mouseX=e.clientX; mouseY=e.clientY; });
+
+  function loop() {
+    /* snappy-smooth follow */
+    curX = lerp(curX, mouseX, 0.2);
+    curY = lerp(curY, mouseY, 0.2);
+
+    const dx = curX - prevCX;
+    const dy = curY - prevCY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    /* steer: face the direction of travel */
+    if (dist > 0.4) {
+      targetSteer = Math.atan2(dy, dx) + Math.PI/2;
+    }
+    /* smooth steer with shortest-path wrap */
+    let diff = targetSteer - steer;
+    while (diff >  Math.PI) diff -= Math.PI*2;
+    while (diff < -Math.PI) diff += Math.PI*2;
+    steer += diff * 0.13;
+
+    /* roll: arc-length / radius */
+    spin += dist / TR;
+
+    /* position + steer via CSS (GPU composited, zero layout cost) */
+    canvas.style.left      = (curX - SIZE/2) + 'px';
+    canvas.style.top       = (curY - SIZE/2) + 'px';
+    canvas.style.transform = `rotate(${steer}rad)`;
+
+    drawTyre(spin);
+
+    prevCX = curX; prevCY = curY;
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+/* ══════════════════════════════════════════════════
+   VIDEO SCRUBBING
+══════════════════════════════════════════════════ */
+(function () {
+  const video      = document.getElementById('ferrari-video');
+  const fill       = document.getElementById('progress-fill');
+  const ctaOverlay = document.getElementById('cta-overlay');
+  const hint       = document.getElementById('scroll-hint');
+
+  const phases = [
+    { id:'lbl-1', start:0.00, end:0.25 },
+    { id:'lbl-2', start:0.25, end:0.50 },
+    { id:'lbl-3', start:0.50, end:0.72 },
+    { id:'lbl-4', start:0.72, end:0.88 },
+  ];
+  const CTA_START = 0.90;
+
+  let duration = 0, videoReady = false;
+
+  video.preload = 'auto';
+  video.load();
+  video.addEventListener('loadedmetadata', () => { duration=video.duration; videoReady=true; video.currentTime=0; });
+  video.addEventListener('canplay',        () => { if(!videoReady){ duration=video.duration; videoReady=true; } });
+  video.addEventListener('canplaythrough', () => { duration=video.duration; videoReady=true; });
+
+  const poll = setInterval(() => {
+    if (video.readyState >= 1 && video.duration > 0) {
+      duration=video.duration; videoReady=true; clearInterval(poll);
+    }
+  }, 50);
+
+  function getProgress() {
+    const ms = document.getElementById('scroll-track').offsetHeight - window.innerHeight;
+    return ms > 0 ? Math.min(1, Math.max(0, window.scrollY / ms)) : 0;
+  }
+
+  function smoothstep(e0,e1,x){
+    const t=Math.max(0,Math.min(1,(x-e0)/(e1-e0)));
+    return t*t*(3-2*t);
+  }
+
+  function updateLabels(prog) {
+    const F=0.03;
+    phases.forEach(ph => {
+      const el=document.getElementById(ph.id); if(!el) return;
+      let a=0;
+      if(prog>=ph.start && prog<=ph.end){
+        const fi=smoothstep(ph.start,ph.start+F,prog);
+        const fo=1-smoothstep(ph.end-F,ph.end,prog);
+        a=Math.min(fi,fo);
+      }
+      el.style.opacity=a;
+    });
+  }
+
+  let lastProg = -1;
+  function mainLoop() {
+    const prog = getProgress();
+    if (Math.abs(prog - lastProg) > 0.0001) {
+      lastProg = prog;
+      if (videoReady && duration > 0) {
+        const t = Math.min(prog/0.88,1) * duration;
+        if (Math.abs(video.currentTime - t) > 0.033) video.currentTime = t;
+      }
+      fill.style.width = (prog*100).toFixed(2)+'%';
+      updateLabels(prog);
+      hint.style.opacity = prog > 0.03 ? '0' : '1';
+      if (prog >= CTA_START) ctaOverlay.classList.add('visible');
+      else ctaOverlay.classList.remove('visible');
+    }
+    requestAnimationFrame(mainLoop);
+  }
+  mainLoop();
+})();
+</script>
+</body>
+</html>
