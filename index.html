@@ -5,459 +5,183 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ferrari — Engineered for Precision</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400;500&family=Bebas+Neue&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400&display=swap');
 
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-  :root {
-    --red: #D40000;
-    --red-dark: #8B0000;
-    --red-glow: rgba(212,0,0,0.35);
-    --bg: #050505;
-    --chrome: #C8C8C8;
-    --text: #E8E0D8;
-    --muted: #888;
-    --gold: #B8966A;
-  }
+:root {
+  --red: #D40000;
+  --bg: #050505;
+  --text: #E8E0D8;
+  --muted: #888;
+}
 
-  html { scroll-behavior: auto; }
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+  scroll-behavior: auto;
+}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-weight: 300;
-    overflow-x: hidden;
-  }
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 48px;
+  background: linear-gradient(to bottom, rgba(5,5,5,0.88) 0%, transparent 100%);
+  pointer-events: none;
+}
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px; letter-spacing: 5px; color: var(--text);
+}
+.nav-logo span { color: var(--red); }
 
-  /* ─── LENIS ─── */
-  html.lenis { height: auto; }
-  .lenis.lenis-smooth { scroll-behavior: auto !important; }
-  .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+/* ── SCROLL SECTION ── */
+#scroll-section {
+  position: relative;
+  height: 700vh; /* scroll space */
+}
 
-  /* ─── NAV ─── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 24px 48px;
-    background: linear-gradient(to bottom, rgba(5,5,5,0.9), transparent);
-  }
-  .nav-logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px; letter-spacing: 4px;
-    color: var(--text);
-  }
-  .nav-logo span { color: var(--red); }
-  .nav-links { display: flex; gap: 32px; }
-  .nav-links a {
-    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
-    color: var(--muted); text-decoration: none;
-    transition: color 0.3s;
-  }
-  .nav-links a:hover { color: var(--text); }
+/* Sticky viewport */
+.sticky-wrap {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
 
-  /* ─── SECTION BASE ─── */
-  section { position: relative; }
+/* Video fills the entire sticky panel */
+#ferrari-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 
-  /* ─── HERO ─── */
-  #hero {
-    height: 100vh; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    overflow: hidden;
-  }
-  .hero-bg {
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse 80% 60% at 50% 60%, rgba(100,0,0,0.18) 0%, var(--bg) 70%);
-  }
-  .hero-line {
-    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-    width: 1px; height: 120px;
-    background: linear-gradient(to bottom, transparent, var(--red));
-  }
-  .hero-content {
-    position: relative; z-index: 2;
-    text-align: center;
-  }
-  .hero-eyebrow {
-    font-size: 10px; letter-spacing: 6px; text-transform: uppercase;
-    color: var(--red); margin-bottom: 24px;
-  }
-  .hero-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(64px, 9vw, 130px);
-    line-height: 0.92;
-    letter-spacing: 2px;
-    background: linear-gradient(135deg, #fff 0%, #C8C8C8 40%, #888 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .hero-subtitle {
-    margin-top: 28px;
-    font-size: 12px; letter-spacing: 4px; text-transform: uppercase;
-    color: var(--muted);
-  }
-  .hero-scroll-hint {
-    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-    display: flex; flex-direction: column; align-items: center; gap: 10px;
-    font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: var(--muted);
-  }
-  .scroll-line {
-    width: 1px; height: 48px;
-    background: linear-gradient(to bottom, var(--red), transparent);
-    animation: scrollPulse 1.8s ease-in-out infinite;
-  }
-  @keyframes scrollPulse {
-    0%, 100% { opacity: 0.3; transform: scaleY(1); }
-    50% { opacity: 1; transform: scaleY(1.2); }
-  }
-  /* ferrari shape placeholder for hero */
-  .hero-car-silhouette {
-    position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
-    width: min(720px, 88vw); opacity: 0.12;
-    pointer-events: none;
-  }
+/* Subtle vignette on top/bottom edges only */
+.vignette {
+  position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background:
+    linear-gradient(to bottom,  rgba(5,5,5,0.45) 0%,   transparent 12%),
+    linear-gradient(to top,     rgba(5,5,5,0.55) 0%,   transparent 14%);
+}
 
-  /* ─── DISASSEMBLY SECTION ─── */
-  #disassembly {
-    position: relative;
-  }
-  .disassembly-pin-wrapper {
-    position: relative;
-    height: 600vh; /* scroll space */
-  }
-  .disassembly-sticky {
-    position: sticky; top: 0;
-    height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden;
-  }
-  /* Video fills the sticky panel */
-  #ferrari-video {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    pointer-events: none;
-  }
-  .video-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(to bottom,
-      rgba(5,5,5,0.55) 0%,
-      rgba(5,5,5,0.0) 30%,
-      rgba(5,5,5,0.0) 70%,
-      rgba(5,5,5,0.65) 100%
-    );
-    pointer-events: none;
-  }
-  /* Side vignette */
-  .video-overlay::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse 90% 85% at 50% 50%, transparent 55%, rgba(5,5,5,0.7) 100%);
-  }
+/* ── PHASE LABELS ── overlaid on video ── */
+.phase-label {
+  position: absolute;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+  pointer-events: none;
+}
+.phase-label .tag {
+  font-size: 9px; letter-spacing: 5px; text-transform: uppercase;
+  color: var(--red); margin-bottom: 8px;
+}
+.phase-label .name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px; letter-spacing: 2px; line-height: 1;
+  color: var(--text);
+}
+.phase-label .sub {
+  margin-top: 6px; font-size: 11px; letter-spacing: 2px;
+  color: var(--muted);
+}
 
-  /* Phase labels that appear during scroll */
-  .phase-label {
-    position: absolute;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.5s;
-    z-index: 10;
-  }
-  .phase-label .label-tag {
-    font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
-    color: var(--red); margin-bottom: 6px;
-  }
-  .phase-label .label-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 28px; font-weight: 300; color: var(--text);
-    line-height: 1;
-  }
+/* Individual positions */
+#lbl-chassis  { bottom: 14vh; left:  5vw; }
+#lbl-hood     { top: 14vh;    right: 5vw; text-align: right; }
+#lbl-engine   { bottom: 14vh; right: 5vw; text-align: right; }
+#lbl-wheels   { top: 14vh;    left:  5vw; }
+#lbl-exploded { 
+  top: 50%; left: 50%; 
+  transform: translate(-50%, -50%); 
+  text-align: center;
+}
+#lbl-exploded .name { font-size: 48px; }
 
-  #label-engine   { bottom: 120px; right: 60px; text-align: right; }
-  #label-chassis  { bottom: 120px; left: 60px; }
-  #label-wheels   { top: 120px; left: 60px; }
-  #label-hood     { top: 120px; right: 60px; text-align: right; }
+/* ── PROGRESS BAR ── */
+.progress-bar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px; background: rgba(255,255,255,0.06); z-index: 20;
+}
+.progress-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(to right, #8B0000, var(--red));
+}
 
-  /* Progress bar */
-  .disassembly-progress {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    height: 2px; background: rgba(255,255,255,0.06); z-index: 20;
-  }
-  .progress-fill {
-    height: 100%; width: 0%;
-    background: linear-gradient(to right, var(--red-dark), var(--red));
-    transition: width 0.1s linear;
-  }
+/* ── CTA SECTION ── */
+#cta {
+  height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: #000;
+  position: relative; overflow: hidden;
+}
 
-  /* Phase counter */
-  .phase-counter {
-    position: absolute; right: 48px; top: 50%; transform: translateY(-50%);
-    z-index: 20; text-align: right;
-  }
-  .phase-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 72px; line-height: 1;
-    color: rgba(212,0,0,0.15);
-    transition: color 0.4s;
-  }
-  .phase-num.active { color: rgba(212,0,0,0.55); }
-  .phase-desc {
-    font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-    color: var(--muted); margin-top: 4px;
-  }
+.cta-glow {
+  position: absolute;
+  width: 700px; height: 700px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,0,0,0.13) 0%, transparent 70%);
+  pointer-events: none;
+  animation: pulse 4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50%       { transform: scale(1.12); opacity: 1; }
+}
 
-  /* ─── ENGINE SHOWCASE ─── */
-  #engine {
-    height: 100vh; display: flex; align-items: center; justify-content: center;
-    background: radial-gradient(ellipse 60% 70% at 50% 50%, rgba(90,0,0,0.22) 0%, var(--bg) 70%);
-    overflow: hidden;
-  }
-  .engine-inner {
-    text-align: center; position: relative; z-index: 2;
-    max-width: 700px; padding: 0 24px;
-  }
-  .engine-tag {
-    display: inline-block; border: 1px solid var(--red);
-    font-size: 9px; letter-spacing: 5px; text-transform: uppercase;
-    color: var(--red); padding: 6px 18px; margin-bottom: 32px;
-  }
-  .engine-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(42px, 7vw, 96px);
-    letter-spacing: 3px; line-height: 0.9;
-    color: var(--text);
-  }
-  .engine-specs {
-    margin-top: 40px;
-    display: flex; justify-content: center; gap: 48px;
-    flex-wrap: wrap;
-  }
-  .spec-item { text-align: center; }
-  .spec-val {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 44px; color: var(--red); line-height: 1;
-  }
-  .spec-unit {
-    font-size: 11px; letter-spacing: 2px; color: var(--muted); margin-top: 4px;
-  }
-  /* Decorative rings */
-  .engine-ring {
-    position: absolute; border-radius: 50%;
-    border: 1px solid rgba(212,0,0,0.12);
-    pointer-events: none; left: 50%; top: 50%;
-    transform: translate(-50%,-50%);
-    animation: ringRotate 18s linear infinite;
-  }
-  .engine-ring:nth-child(1) { width: 380px; height: 380px; }
-  .engine-ring:nth-child(2) { width: 520px; height: 520px; animation-duration: 26s; animation-direction: reverse; }
-  .engine-ring:nth-child(3) { width: 660px; height: 660px; animation-duration: 34s; }
-  @keyframes ringRotate {
-    from { transform: translate(-50%,-50%) rotate(0deg); }
-    to   { transform: translate(-50%,-50%) rotate(360deg); }
-  }
+.cta-inner {
+  position: relative; z-index: 2; text-align: center;
+}
 
-  /* ─── TECH DETAILS ─── */
-  #tech {
-    padding: 120px 48px;
-    background: var(--bg);
-    border-top: 1px solid rgba(255,255,255,0.05);
-  }
-  .tech-inner {
-    max-width: 1100px; margin: 0 auto;
-  }
-  .tech-header {
-    display: flex; align-items: flex-end; justify-content: space-between;
-    margin-bottom: 80px; flex-wrap: wrap; gap: 24px;
-  }
-  .tech-header-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(36px, 5vw, 72px);
-    letter-spacing: 2px; color: var(--text);
-  }
-  .tech-header-desc {
-    max-width: 320px; font-size: 13px; line-height: 1.7;
-    color: var(--muted); text-align: right;
-  }
-  .tech-stats {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1px; background: rgba(255,255,255,0.05);
-  }
-  .tech-stat {
-    background: var(--bg); padding: 48px 36px;
-    position: relative; overflow: hidden;
-  }
-  .tech-stat::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(to right, var(--red), transparent);
-    opacity: 0; transition: opacity 0.5s;
-  }
-  .tech-stat.revealed::before { opacity: 1; }
-  .stat-number {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 68px; line-height: 1; color: var(--text);
-    transition: color 0.3s;
-  }
-  .tech-stat:hover .stat-number { color: var(--red); }
-  .stat-label {
-    font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
-    color: var(--muted); margin-top: 8px;
-  }
-  .stat-sub {
-    font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.5;
-  }
-  .stat-bar {
-    margin-top: 20px; height: 2px; background: rgba(255,255,255,0.06); overflow: hidden;
-  }
-  .stat-bar-fill {
-    height: 100%; width: 0%; background: var(--red);
-    transition: width 1.4s cubic-bezier(0.16,1,0.3,1);
-  }
-  .tech-stat.revealed .stat-bar-fill { width: var(--fill); }
+.cta-line {
+  width: 50px; height: 1px; background: var(--red);
+  margin: 0 auto 28px;
+}
 
-  /* ─── EXPLODED VIEW ─── */
-  #exploded {
-    height: 100vh; display: flex; align-items: center; justify-content: center;
-    background: radial-gradient(ellipse 100% 80% at 50% 100%, rgba(50,0,0,0.3) 0%, var(--bg) 60%);
-    overflow: hidden; position: relative;
-  }
-  .exploded-inner {
-    text-align: center; position: relative; z-index: 2;
-    max-width: 900px; padding: 0 24px;
-  }
-  .exploded-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(32px, 6vw, 88px);
-    letter-spacing: 3px; color: var(--text); margin-bottom: 16px;
-  }
-  .exploded-sub {
-    font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted);
-  }
-  .exploded-parts-grid {
-    margin-top: 64px;
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 24px; text-align: left;
-  }
-  .part-card {
-    border: 1px solid rgba(255,255,255,0.06);
-    padding: 24px 20px;
-    position: relative; overflow: hidden;
-    opacity: 0; transform: translateY(20px);
-    transition: opacity 0.5s, transform 0.5s;
-  }
-  .part-card.revealed { opacity: 1; transform: translateY(0); }
-  .part-card::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(212,0,0,0.04), transparent);
-    pointer-events: none;
-  }
-  .part-number {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 36px; color: rgba(212,0,0,0.2);
-    line-height: 1; margin-bottom: 10px;
-  }
-  .part-name {
-    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--text); margin-bottom: 4px;
-  }
-  .part-axis {
-    font-size: 10px; color: var(--muted);
-  }
+.cta-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(52px, 9vw, 120px);
+  letter-spacing: 3px; line-height: 0.88;
+  background: linear-gradient(135deg, #fff 0%, #999 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 52px;
+}
 
-  /* ─── CTA ─── */
-  #cta {
-    height: 100vh; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    background: #000;
-    position: relative; overflow: hidden;
-  }
-  .cta-glow {
-    position: absolute; width: 600px; height: 600px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(212,0,0,0.15) 0%, transparent 70%);
-    pointer-events: none;
-    animation: ctaPulse 4s ease-in-out infinite;
-  }
-  @keyframes ctaPulse {
-    0%, 100% { transform: scale(1); opacity: 0.7; }
-    50% { transform: scale(1.15); opacity: 1; }
-  }
-  .cta-inner { position: relative; z-index: 2; text-align: center; }
-  .cta-eyebrow {
-    font-size: 10px; letter-spacing: 6px; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 24px;
-  }
-  .cta-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(44px, 8vw, 110px);
-    letter-spacing: 2px; line-height: 0.9;
-    background: linear-gradient(135deg, #fff 0%, #aaa 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 48px;
-  }
-  .cta-btn {
-    display: inline-block;
-    padding: 18px 56px;
-    border: 1px solid var(--red);
-    font-size: 11px; letter-spacing: 5px; text-transform: uppercase;
-    color: var(--text); text-decoration: none;
-    position: relative; overflow: hidden; cursor: pointer;
-    background: transparent;
-    transition: color 0.4s;
-  }
-  .cta-btn::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: var(--red);
-    transform: scaleX(0); transform-origin: left;
-    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
-  }
-  .cta-btn:hover::before { transform: scaleX(1); }
-  .cta-btn:hover { color: #fff; }
-  .cta-btn span { position: relative; z-index: 1; }
-  .cta-disclaimer {
-    margin-top: 32px; font-size: 10px; letter-spacing: 2px;
-    color: rgba(255,255,255,0.15);
-  }
-  /* Horizontal rule */
-  .cta-rule {
-    width: 60px; height: 1px; background: var(--red);
-    margin: 0 auto 32px;
-  }
+.cta-btn {
+  display: inline-block;
+  padding: 18px 60px;
+  border: 1px solid var(--red);
+  font-size: 11px; letter-spacing: 5px; text-transform: uppercase;
+  color: var(--text); text-decoration: none;
+  position: relative; overflow: hidden; cursor: pointer;
+  background: transparent; transition: color 0.4s;
+}
+.cta-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: var(--red);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.16,1,0.3,1);
+}
+.cta-btn:hover::before { transform: scaleX(1); }
+.cta-btn:hover { color: #fff; }
+.cta-btn span { position: relative; z-index: 1; }
 
-  /* ─── FOOTER ─── */
-  footer {
-    background: #000; padding: 40px 48px;
-    display: flex; align-items: center; justify-content: space-between;
-    border-top: 1px solid rgba(255,255,255,0.05);
-    flex-wrap: wrap; gap: 16px;
-  }
-  .footer-brand {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px; letter-spacing: 4px; color: rgba(255,255,255,0.2);
-  }
-  .footer-note {
-    font-size: 10px; color: rgba(255,255,255,0.15); letter-spacing: 1px;
-  }
-
-  /* ─── MOBILE ─── */
-  @media (max-width: 768px) {
-    nav { padding: 18px 24px; }
-    .nav-links { display: none; }
-    .exploded-parts-grid { grid-template-columns: repeat(2, 1fr); }
-    #tech { padding: 80px 24px; }
-    .tech-header { flex-direction: column; }
-    .tech-header-desc { text-align: left; max-width: 100%; }
-    footer { flex-direction: column; text-align: center; }
-    .phase-counter { display: none; }
-  }
-
-  /* ─── UTILITY ─── */
-  .sr-only {
-    position: absolute; width: 1px; height: 1px;
-    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap;
-  }
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  nav { padding: 18px 24px; }
+  .phase-label .name { font-size: 22px; }
+  #lbl-exploded .name { font-size: 30px; }
+}
 </style>
 </head>
 <body>
@@ -465,413 +189,159 @@
 <!-- NAV -->
 <nav>
   <div class="nav-logo"><span>F</span>ERRARI</div>
-  <div class="nav-links">
-    <a href="#disassembly">Engineering</a>
-    <a href="#engine">Powertrain</a>
-    <a href="#tech">Specifications</a>
-    <a href="#cta">Configure</a>
-  </div>
 </nav>
 
-<!-- ══════════════ HERO ══════════════ -->
-<section id="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-line"></div>
-  <div class="hero-content">
-    <p class="hero-eyebrow">Ferrari · Maranello · 2025</p>
-    <h1 class="hero-title">ENGINEERED<br>FOR PRECISION</h1>
-    <p class="hero-subtitle">Scroll to explore the machine</p>
-  </div>
-  <!-- SVG car silhouette -->
-  <svg class="hero-car-silhouette" viewBox="0 0 900 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <path d="M60 200 Q80 200 100 180 L200 130 Q260 90 360 80 L540 78 Q640 80 700 120 L820 170 Q840 180 850 200 L870 200 Q885 200 885 215 L885 230 Q885 240 870 240 L790 240 Q780 220 760 210 Q720 190 680 210 Q650 225 640 240 L260 240 Q250 225 230 210 Q190 190 150 210 Q120 225 110 240 L40 240 Q25 240 25 225 L25 215 Q25 200 40 200 Z" fill="#D40000" opacity="0.8"/>
-    <ellipse cx="680" cy="240" rx="55" ry="28" fill="#1a1a1a" stroke="#555" stroke-width="2"/>
-    <ellipse cx="680" cy="240" rx="30" ry="16" fill="#333"/>
-    <ellipse cx="195" cy="240" rx="55" ry="28" fill="#1a1a1a" stroke="#555" stroke-width="2"/>
-    <ellipse cx="195" cy="240" rx="30" ry="16" fill="#333"/>
-    <!-- windscreen -->
-    <path d="M290 132 L200 132 Q220 105 280 100 L360 80 Z" fill="rgba(100,180,255,0.15)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-    <path d="M380 80 L540 78 L590 80 L570 132 L380 132 Z" fill="rgba(100,180,255,0.15)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-    <!-- headlight -->
-    <ellipse cx="810" cy="160" rx="22" ry="10" fill="rgba(255,240,200,0.5)"/>
-    <ellipse cx="100" cy="158" rx="20" ry="9" fill="rgba(255,240,200,0.3)"/>
-  </svg>
-  <div class="hero-scroll-hint">
-    <div class="scroll-line"></div>
-    <span>Scroll</span>
+<!-- ══════ SCROLL + VIDEO SECTION ══════ -->
+<section id="scroll-section">
+  <div class="sticky-wrap">
+
+    <video id="ferrari-video" muted playsinline preload="auto">
+      <source src="https://raw.githubusercontent.com/aiexpert807567-dotcom/car/main/Ferrari_disassembles_exploded_view_1080p_202606241151.mp4" type="video/mp4">
+    </video>
+
+    <div class="vignette"></div>
+
+    <!-- Phase labels appear/disappear as you scroll -->
+    <div class="phase-label" id="lbl-chassis">
+      <div class="tag">01 · Chassis</div>
+      <div class="name">Monocoque<br>Structure</div>
+      <div class="sub">Aluminium Spaceframe</div>
+    </div>
+
+    <div class="phase-label" id="lbl-hood">
+      <div class="tag">02 · Bodywork</div>
+      <div class="name">Carbon Fibre<br>Composite</div>
+      <div class="sub">Hood — Hinge Axis +RX</div>
+    </div>
+
+    <div class="phase-label" id="lbl-engine">
+      <div class="tag">03 · Powertrain</div>
+      <div class="name">V8 Twin<br>Turbo Unit</div>
+      <div class="sub">710 hp · Type F154 · +Y Extraction</div>
+    </div>
+
+    <div class="phase-label" id="lbl-wheels">
+      <div class="tag">04 · Suspension</div>
+      <div class="name">Adaptive<br>Magnetic Ride</div>
+      <div class="sub">Wheel & Hub ×4 · ±X Outward</div>
+    </div>
+
+    <div class="phase-label" id="lbl-exploded">
+      <div class="tag">Full Engineering View</div>
+      <div class="name">Anatomy of<br>a Ferrari</div>
+    </div>
+
+    <!-- Red progress line at bottom -->
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
   </div>
 </section>
 
-<!-- ══════════════ DISASSEMBLY ══════════════ -->
-<section id="disassembly">
-  <div class="disassembly-pin-wrapper">
-    <div class="disassembly-sticky">
-
-      <!-- The actual Ferrari disassembly video -->
-      <video id="ferrari-video" muted playsinline preload="auto"
-             poster="">
-        <source src="https://raw.githubusercontent.com/aiexpert807567-dotcom/car/main/Ferrari_disassembles_exploded_view_1080p_202606241151.mp4" type="video/mp4">
-      </video>
-
-      <div class="video-overlay"></div>
-
-      <!-- Phase labels -->
-      <div class="phase-label" id="label-chassis">
-        <div class="label-tag">01 · Chassis</div>
-        <div class="label-name">Monocoque<br>Structure</div>
-      </div>
-      <div class="phase-label" id="label-engine">
-        <div class="label-tag">02 · Powertrain</div>
-        <div class="label-name">V8 Twin<br>Turbo Unit</div>
-      </div>
-      <div class="phase-label" id="label-wheels">
-        <div class="label-tag">03 · Suspension</div>
-        <div class="label-name">Adaptive<br>Magnetic Ride</div>
-      </div>
-      <div class="phase-label" id="label-hood">
-        <div class="label-tag">04 · Bodywork</div>
-        <div class="label-name">Carbon Fibre<br>Composite</div>
-      </div>
-
-      <!-- Phase counter -->
-      <div class="phase-counter">
-        <div class="phase-num" id="phase-num">01</div>
-        <div class="phase-desc" id="phase-desc">Chassis</div>
-      </div>
-
-      <!-- Progress -->
-      <div class="disassembly-progress">
-        <div class="progress-fill" id="progress-fill"></div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════ ENGINE SHOWCASE ══════════════ -->
-<section id="engine">
-  <div class="engine-ring"></div>
-  <div class="engine-ring"></div>
-  <div class="engine-ring"></div>
-  <div class="engine-inner">
-    <div class="engine-tag">Power Unit · Type F154</div>
-    <h2 class="engine-title">V8 TWIN TURBO<br>POWER UNIT</h2>
-    <div class="engine-specs">
-      <div class="spec-item">
-        <div class="spec-val" data-target="710">0</div>
-        <div class="spec-unit">Horsepower</div>
-      </div>
-      <div class="spec-item">
-        <div class="spec-val" data-target="211">0</div>
-        <div class="spec-unit">Top Speed mph</div>
-      </div>
-      <div class="spec-item">
-        <div class="spec-val" data-target="568">0</div>
-        <div class="spec-unit">lb·ft Torque</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════ TECH DETAILS ══════════════ -->
-<section id="tech">
-  <div class="tech-inner">
-    <div class="tech-header">
-      <h2 class="tech-header-title">TECHNICAL<br>SPECIFICATIONS</h2>
-      <p class="tech-header-desc">Every dimension measured in tenths of millimetres. Every tolerance held to aerospace standards. This is what precision looks like at 9,000 rpm.</p>
-    </div>
-    <div class="tech-stats">
-      <div class="tech-stat" style="--fill:94%">
-        <div class="stat-number" data-target="710">0</div>
-        <div class="stat-label">Horsepower</div>
-        <div class="stat-sub">@ 7,500 rpm · naturally assisted twin turbo</div>
-        <div class="stat-bar"><div class="stat-bar-fill"></div></div>
-      </div>
-      <div class="tech-stat" style="--fill:86%">
-        <div class="stat-number" data-target="568">0</div>
-        <div class="stat-label">Torque lb·ft</div>
-        <div class="stat-sub">@ 3,000–5,250 rpm · peak plateau</div>
-        <div class="stat-bar"><div class="stat-bar-fill"></div></div>
-      </div>
-      <div class="tech-stat" style="--fill:70%">
-        <div class="stat-number" data-target="211">0</div>
-        <div class="stat-label">Top Speed mph</div>
-        <div class="stat-sub">electronically governed · drag-optimised</div>
-        <div class="stat-bar"><div class="stat-bar-fill"></div></div>
-      </div>
-      <div class="tech-stat" style="--fill:98%">
-        <div class="stat-number" data-target="3902">0</div>
-        <div class="stat-label">Displacement cc</div>
-        <div class="stat-sub">3.9 litre · 90° V architecture · flat-plane crank</div>
-        <div class="stat-bar"><div class="stat-bar-fill"></div></div>
-      </div>
-      <div class="tech-stat" style="--fill:35%">
-        <div class="stat-number" data-target="2.9">0</div>
-        <div class="stat-label">0–62 mph sec</div>
-        <div class="stat-sub">launch control enabled · race-derived gearbox</div>
-        <div class="stat-bar"><div class="stat-bar-fill"></div></div>
-      </div>
-      <div class="tech-stat" style="--fill:60%">
-        <div class="stat-number" data-target="1475">0</div>
-        <div class="stat-label">Weight kg (dry)</div>
-        <div class="stat-sub">carbon fibre body · aluminium spaceframe</div>
-        <div class="stat-bar"><div class="stat-bar-fill"></div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════ EXPLODED VIEW ══════════════ -->
-<section id="exploded">
-  <div class="exploded-inner">
-    <h2 class="exploded-title">ANATOMY OF<br>A FERRARI</h2>
-    <p class="exploded-sub">Every component engineered to a singular purpose</p>
-    <div class="exploded-parts-grid">
-      <div class="part-card">
-        <div class="part-number">01</div>
-        <div class="part-name">Monocoque Chassis</div>
-        <div class="part-axis">Axis: Static reference</div>
-      </div>
-      <div class="part-card">
-        <div class="part-number">02</div>
-        <div class="part-name">V8 Twin Turbo</div>
-        <div class="part-axis">Axis: +Y extraction</div>
-      </div>
-      <div class="part-card">
-        <div class="part-number">03</div>
-        <div class="part-name">Carbon Hood</div>
-        <div class="part-axis">Axis: Hinge +RX</div>
-      </div>
-      <div class="part-card">
-        <div class="part-number">04</div>
-        <div class="part-name">Front Bumper</div>
-        <div class="part-axis">Axis: +Z forward</div>
-      </div>
-      <div class="part-card">
-        <div class="part-number">05</div>
-        <div class="part-name">Rear Fascia</div>
-        <div class="part-axis">Axis: −Z rearward</div>
-      </div>
-      <div class="part-card">
-        <div class="part-number">06</div>
-        <div class="part-name">Door Assembly ×2</div>
-        <div class="part-axis">Axis: ±Y pivot</div>
-      </div>
-      <div class="part-card">
-        <div class="part-number">07</div>
-        <div class="part-name">Wheel & Hub ×4</div>
-        <div class="part-axis">Axis: ±X outward</div>
-      </div>
-      <div class="part-card">
-        <div class="part-number">08</div>
-        <div class="part-name">Suspension Arms</div>
-        <div class="part-axis">Axis: −Y drop</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════ CTA ══════════════ -->
+<!-- ══════ CTA (only other section) ══════ -->
 <section id="cta">
   <div class="cta-glow"></div>
   <div class="cta-inner">
-    <p class="cta-eyebrow">Made to order · Maranello</p>
-    <div class="cta-rule"></div>
+    <div class="cta-line"></div>
     <h2 class="cta-title">MAKE IT<br>YOURS</h2>
     <a href="#" class="cta-btn"><span>Configure Your Ferrari</span></a>
-    <p class="cta-disclaimer">Prices and specifications subject to change without notice.</p>
   </div>
 </section>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-brand">Ferrari S.p.A.</div>
-  <div class="footer-note">© 2025 Ferrari N.V. All rights reserved. This page is a design demonstration.</div>
-</footer>
-
-<!-- ═══════════════════════════════════════════════ SCRIPTS ═══ -->
+<!-- GSAP -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
 gsap.registerPlugin(ScrollTrigger);
 
-/* ─── Lenis smooth scroll (CDN) ─── */
-const lenisScript = document.createElement('script');
-lenisScript.src = 'https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js';
-lenisScript.onload = () => {
-  const lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
-  lenis.on('scroll', ScrollTrigger.update);
-  gsap.ticker.add(time => lenis.raf(time * 1000));
-  gsap.ticker.lagSmoothing(0);
-  initAnimations();
-};
-document.head.appendChild(lenisScript);
+const video = document.getElementById('ferrari-video');
+const progressFill = document.getElementById('progress-fill');
 
-/* ─── Fallback if Lenis fails ─── */
-lenisScript.onerror = () => { initAnimations(); };
+/* ── 1. Force the browser to load the video ── */
+video.load();
 
-function initAnimations() {
+let duration = 0;
 
-  /* ─ 1. Video scroll driver ─ */
-  const video = document.getElementById('ferrari-video');
-  const progressFill = document.getElementById('progress-fill');
-  const phaseNum = document.getElementById('phase-num');
-  const phaseDesc = document.getElementById('phase-desc');
+// Try metadata
+video.addEventListener('loadedmetadata', () => {
+  duration = video.duration || 0;
+  // Seek to frame 0 to "wake" the video
+  video.currentTime = 0;
+});
 
-  const phases = [
-    { prog: 0.0,  num: '01', desc: 'Chassis',    label: 'label-chassis' },
-    { prog: 0.2,  num: '02', desc: 'Hood',        label: 'label-hood' },
-    { prog: 0.4,  num: '03', desc: 'Powertrain',  label: 'label-engine' },
-    { prog: 0.6,  num: '04', desc: 'Suspension',  label: 'label-wheels' },
-    { prog: 0.8,  num: '05', desc: 'Exploded',    label: null },
-  ];
+// Fallback: if metadata fires late, keep retrying
+function getDuration() {
+  if (video.duration && video.duration > 0) {
+    duration = video.duration;
+  }
+}
+setInterval(getDuration, 200);
 
-  let videoDuration = 0;
-  video.addEventListener('loadedmetadata', () => {
-    videoDuration = video.duration || 0;
-  });
+/* ── 2. Phase windows (0–1 scroll progress) ── */
+/*
+  Each phase: { start, end, id }
+  Outside [start, end] → opacity 0
+  Inside  [start, end] → opacity 1
+  Fade zone: ±0.04 around each boundary
+*/
+const phases = [
+  { id: 'lbl-chassis',  start: 0.00, end: 0.22 },
+  { id: 'lbl-hood',     start: 0.22, end: 0.44 },
+  { id: 'lbl-engine',   start: 0.44, end: 0.66 },
+  { id: 'lbl-wheels',   start: 0.66, end: 0.85 },
+  { id: 'lbl-exploded', start: 0.85, end: 1.00 },
+];
 
-  // Force load
-  video.load();
+function smoothStep(edge0, edge1, x) {
+  const t = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
+  return t * t * (3 - 2 * t);
+}
 
-  ScrollTrigger.create({
-    trigger: '.disassembly-pin-wrapper',
-    start: 'top top',
-    end: 'bottom bottom',
-    scrub: 0.5,
-    onUpdate(self) {
-      const prog = self.progress;
-
-      // Drive video
-      if (videoDuration > 0) {
-        const targetTime = prog * videoDuration;
-        if (Math.abs(video.currentTime - targetTime) > 0.05) {
-          video.currentTime = targetTime;
-        }
-      }
-
-      // Progress bar
-      progressFill.style.width = (prog * 100).toFixed(1) + '%';
-
-      // Phase labels & counter
-      let activePhase = phases[0];
-      for (let i = phases.length - 1; i >= 0; i--) {
-        if (prog >= phases[i].prog) { activePhase = phases[i]; break; }
-      }
-
-      if (phaseNum.textContent !== activePhase.num) {
-        phaseNum.textContent = activePhase.num;
-        phaseDesc.textContent = activePhase.desc;
-        phaseNum.classList.add('active');
-        setTimeout(() => phaseNum.classList.remove('active'), 600);
-      }
-
-      // Show/hide phase labels
-      phases.forEach((p, i) => {
-        if (!p.label) return;
-        const el = document.getElementById(p.label);
-        const show = prog >= p.prog && prog < (phases[i+1]?.prog ?? 1.0) + 0.05;
-        el.style.opacity = show ? '1' : '0';
-      });
+function updateLabels(prog) {
+  const FADE = 0.04;
+  phases.forEach(ph => {
+    const el = document.getElementById(ph.id);
+    let alpha = 0;
+    if (prog >= ph.start && prog <= ph.end) {
+      const fadeIn  = smoothStep(ph.start, ph.start + FADE, prog);
+      const fadeOut = 1 - smoothStep(ph.end - FADE, ph.end, prog);
+      alpha = Math.min(fadeIn, ph.end < 1 ? fadeOut : 1);
     }
-  });
-
-  /* ─ 2. Hero elements entrance ─ */
-  gsap.from('.hero-eyebrow', { opacity: 0, y: 20, duration: 1.2, delay: 0.3, ease: 'power2.out' });
-  gsap.from('.hero-title', { opacity: 0, y: 40, duration: 1.4, delay: 0.5, ease: 'power2.out' });
-  gsap.from('.hero-subtitle', { opacity: 0, y: 20, duration: 1.0, delay: 0.9, ease: 'power2.out' });
-  gsap.from('.hero-scroll-hint', { opacity: 0, y: 16, duration: 1.0, delay: 1.3, ease: 'power2.out' });
-  gsap.from('.hero-car-silhouette', { opacity: 0, scale: 0.95, duration: 2.0, delay: 0.6, ease: 'power2.out' });
-
-  /* ─ 3. Mouse parallax on hero ─ */
-  document.addEventListener('mousemove', e => {
-    const cx = window.innerWidth / 2;
-    const cy = window.innerHeight / 2;
-    const dx = (e.clientX - cx) / cx;
-    const dy = (e.clientY - cy) / cy;
-    gsap.to('.hero-car-silhouette', { x: dx * 18, y: dy * 8, duration: 1.2, ease: 'power1.out' });
-    gsap.to('.hero-title', { x: dx * -6, y: dy * -3, duration: 1.4, ease: 'power1.out' });
-  });
-
-  /* ─ 4. Engine counter ─ */
-  const engineSection = document.getElementById('engine');
-  const engineCounters = engineSection.querySelectorAll('.spec-val[data-target]');
-  let engineCounted = false;
-  ScrollTrigger.create({
-    trigger: '#engine',
-    start: 'top 70%',
-    onEnter() {
-      if (engineCounted) return; engineCounted = true;
-      engineCounters.forEach(el => {
-        const target = parseFloat(el.dataset.target);
-        gsap.to({ val: 0 }, {
-          val: target, duration: 2, ease: 'power2.out',
-          onUpdate() { el.textContent = Math.round(this.targets()[0].val); },
-          onComplete() { el.textContent = target; }
-        });
-      });
-    }
-  });
-
-  /* ─ 5. Engine section entrance ─ */
-  gsap.from('.engine-tag', { opacity: 0, y: 20, duration: 1, scrollTrigger: { trigger: '#engine', start: 'top 70%' }, ease: 'power2.out' });
-  gsap.from('.engine-title', { opacity: 0, y: 40, duration: 1.3, delay: 0.2, scrollTrigger: { trigger: '#engine', start: 'top 70%' }, ease: 'power2.out' });
-  gsap.from('.spec-item', { opacity: 0, y: 24, stagger: 0.15, duration: 1, delay: 0.5, scrollTrigger: { trigger: '#engine', start: 'top 70%' }, ease: 'power2.out' });
-
-  /* ─ 6. Tech stats ─ */
-  const techStats = document.querySelectorAll('.tech-stat');
-  techStats.forEach(stat => {
-    const numEl = stat.querySelector('.stat-number');
-    const target = parseFloat(numEl.dataset.target);
-    ScrollTrigger.create({
-      trigger: stat,
-      start: 'top 85%',
-      onEnter() {
-        stat.classList.add('revealed');
-        gsap.to({ val: 0 }, {
-          val: target, duration: 2, ease: 'power2.out',
-          onUpdate() {
-            const v = this.targets()[0].val;
-            numEl.textContent = target < 10 ? v.toFixed(1) : Math.round(v);
-          },
-          onComplete() { numEl.textContent = target < 10 ? target.toFixed(1) : target; }
-        });
-      }
-    });
-  });
-
-  /* ─ 7. Tech header ─ */
-  gsap.from('.tech-header-title', { opacity: 0, x: -40, duration: 1.2, scrollTrigger: { trigger: '#tech', start: 'top 70%' }, ease: 'power2.out' });
-  gsap.from('.tech-header-desc',  { opacity: 0, x: 40,  duration: 1.2, delay: 0.2, scrollTrigger: { trigger: '#tech', start: 'top 70%' }, ease: 'power2.out' });
-
-  /* ─ 8. Exploded parts cards ─ */
-  const partCards = document.querySelectorAll('.part-card');
-  partCards.forEach((card, i) => {
-    ScrollTrigger.create({
-      trigger: card,
-      start: 'top 90%',
-      onEnter() {
-        setTimeout(() => card.classList.add('revealed'), i * 80);
-      }
-    });
-  });
-
-  /* ─ 9. Exploded title ─ */
-  gsap.from('.exploded-title', { opacity: 0, y: 40, duration: 1.4, scrollTrigger: { trigger: '#exploded', start: 'top 70%' }, ease: 'power2.out' });
-  gsap.from('.exploded-sub', { opacity: 0, y: 20, duration: 1, delay: 0.3, scrollTrigger: { trigger: '#exploded', start: 'top 70%' }, ease: 'power2.out' });
-
-  /* ─ 10. CTA ─ */
-  gsap.from('.cta-eyebrow', { opacity: 0, y: 20, duration: 1, scrollTrigger: { trigger: '#cta', start: 'top 70%' }, ease: 'power2.out' });
-  gsap.from('.cta-rule', { scaleX: 0, duration: 1, delay: 0.15, transformOrigin: 'left', scrollTrigger: { trigger: '#cta', start: 'top 70%' }, ease: 'power2.out' });
-  gsap.from('.cta-title', { opacity: 0, y: 40, duration: 1.4, delay: 0.2, scrollTrigger: { trigger: '#cta', start: 'top 70%' }, ease: 'power2.out' });
-  gsap.from('.cta-btn', { opacity: 0, y: 24, duration: 1, delay: 0.6, scrollTrigger: { trigger: '#cta', start: 'top 70%' }, ease: 'power2.out' });
-
-  /* ─ 11. Subtle hero zoom on scroll ─ */
-  gsap.to('#hero', {
-    scale: 1.04,
-    scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true }
+    el.style.opacity = alpha;
   });
 }
+
+/* ── 3. ScrollTrigger scrubs video currentTime ── */
+ScrollTrigger.create({
+  trigger: '#scroll-section',
+  start: 'top top',
+  end: 'bottom bottom',
+  scrub: 0.6,               // smooth lag
+  onUpdate(self) {
+    const prog = self.progress;
+
+    // Drive video
+    if (duration > 0) {
+      const target = prog * duration;
+      // Only seek if delta is meaningful (avoids jitter)
+      if (Math.abs(video.currentTime - target) > 0.033) {
+        video.currentTime = target;
+      }
+    }
+
+    // Progress bar
+    progressFill.style.width = (prog * 100).toFixed(2) + '%';
+
+    // Phase labels
+    updateLabels(prog);
+  }
+});
+
+/* ── 4. CTA entrance ── */
+gsap.from('.cta-line',  { scaleX: 0, duration: 1,   transformOrigin: 'left', ease: 'power2.out', scrollTrigger: { trigger: '#cta', start: 'top 70%' } });
+gsap.from('.cta-title', { opacity: 0, y: 40, duration: 1.4, delay: 0.15, ease: 'power2.out', scrollTrigger: { trigger: '#cta', start: 'top 70%' } });
+gsap.from('.cta-btn',   { opacity: 0, y: 24, duration: 1,   delay: 0.5,  ease: 'power2.out', scrollTrigger: { trigger: '#cta', start: 'top 70%' } });
 </script>
 </body>
 </html>
