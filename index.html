@@ -227,7 +227,7 @@ nav {
 #tyre-cursor {
   position: fixed;
   top: 0; left: 0;
-  width: 48px; height: 48px;
+  width: 64px; height: 64px;
   pointer-events: none;
   z-index: 9999;
   will-change: transform;
@@ -294,22 +294,18 @@ nav {
   </div>
 </div>
 
-<!-- Tyre cursor canvas — side view, 48×48 -->
-<canvas id="tyre-cursor" width="48" height="48"></canvas>
+<!-- Tyre cursor canvas — 3D-like top-down view, 64x64 (CSS pixels), 128x128 (Retina resolution) -->
+<canvas id="tyre-cursor" width="128" height="128"></canvas>
 
 <script>
 /* ══════════════════════════════════════════════════
-   TYRE CURSOR — side-view, steers & rolls realistically
+   3D TOP-DOWN TYRE CURSOR — Realistic steering and rolling
 ══════════════════════════════════════════════════ */
 (function () {
-  const SIZE = 48;
+  const SIZE = 64; // CSS Width/Height in px
   const canvas = document.getElementById('tyre-cursor');
   const ctx = canvas.getContext('2d');
-  const CX = SIZE / 2, CY = SIZE / 2;
-  const TR = 21;  // tyre outer radius
-  const RR = 13;  // rim radius
-  const HR = 4.5; // hub radius
-
+  
   let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
   let curX = mouseX, curY = mouseY;
   let prevCX = curX, prevCY = curY;
@@ -319,142 +315,191 @@ nav {
   function lerp(a, b, t) { return a + (b - a) * t; }
 
   function drawTyre(spin) {
-    ctx.clearRect(0, 0, SIZE, SIZE);
-
-    /* 1 – RUBBER BODY */
-    const rg = ctx.createRadialGradient(CX-5, CY-5, 2, CX, CY, TR);
-    rg.addColorStop(0,   '#3a3a3a');
-    rg.addColorStop(0.55,'#181818');
-    rg.addColorStop(1,   '#060606');
-    ctx.beginPath(); ctx.arc(CX, CY, TR, 0, Math.PI*2);
-    ctx.fillStyle = rg; ctx.fill();
-
-    /* sidewall ring */
-    ctx.beginPath(); ctx.arc(CX, CY, TR, 0, Math.PI*2);
-    ctx.strokeStyle = 'rgba(85,85,85,0.65)'; ctx.lineWidth = 1.1; ctx.stroke();
-    ctx.beginPath(); ctx.arc(CX, CY, TR-3, 0, Math.PI*2);
-    ctx.strokeStyle = 'rgba(25,25,25,0.9)'; ctx.lineWidth = 0.7; ctx.stroke();
-
-    /* 2 – TREAD BLOCKS (spin with rolling) */
-    ctx.save(); ctx.translate(CX, CY); ctx.rotate(spin);
-    const N = 18, ro = TR-0.5, ri = TR-5;
-    for (let i = 0; i < N; i++) {
-      const a0 = (i/N)*Math.PI*2, a1 = ((i+0.6)/N)*Math.PI*2;
-      ctx.beginPath();
-      ctx.arc(0,0,ri,a0,a1); ctx.arc(0,0,ro,a1,a0,true); ctx.closePath();
-      ctx.fillStyle = i%2===0 ? '#2c2c2c' : '#181818'; ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(Math.cos(a0)*ri, Math.sin(a0)*ri);
-      ctx.lineTo(Math.cos(a0)*ro, Math.sin(a0)*ro);
-      ctx.strokeStyle='#000'; ctx.lineWidth=0.7; ctx.stroke();
-      /* sipe */
-      const am=(a0+a1)*0.5;
-      ctx.beginPath();
-      ctx.moveTo(Math.cos(am-0.05)*ri, Math.sin(am-0.05)*ri);
-      ctx.lineTo(Math.cos(am+0.05)*ro, Math.sin(am+0.05)*ro);
-      ctx.strokeStyle='rgba(0,0,0,0.6)'; ctx.lineWidth=0.5; ctx.stroke();
-    }
+    ctx.clearRect(0, 0, 128, 128);
+    
+    ctx.save();
+    ctx.scale(2, 2); // Work in 64x64 design space
+    
+    const CX = 32;
+    const CY = 32;
+    const W = 20;   // Tread width
+    const H = 46;   // Tread profile length
+    const R = H / 2; // 23px vertical radius
+    
+    // 1. Draw 3D Drop Shadow behind the tyre
+    ctx.save();
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetX = 3;
+    ctx.shadowOffsetY = 5;
+    ctx.beginPath();
+    ctx.roundRect(CX - W/2, CY - H/2 + 2, W, H - 4, 5);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+    ctx.fill();
     ctx.restore();
-
-    /* 3 – RIM (spins with tyre) */
-    ctx.save(); ctx.translate(CX, CY); ctx.rotate(spin);
-    const rimG = ctx.createRadialGradient(-3,-3,1, 0,0,RR);
-    rimG.addColorStop(0,   '#e4e4e4');
-    rimG.addColorStop(0.3, '#b8b8b8');
-    rimG.addColorStop(0.7, '#787878');
-    rimG.addColorStop(1,   '#404040');
-    ctx.beginPath(); ctx.arc(0,0,RR,0,Math.PI*2);
-    ctx.fillStyle=rimG; ctx.fill();
-
-    /* 5 spokes */
-    const SP=5;
-    for (let i=0;i<SP;i++) {
-      const sa=(i/SP)*Math.PI*2;
-      const w0=0.2, w1=0.1;
-      ctx.beginPath();
-      ctx.moveTo(Math.cos(sa-w0)*(HR+1), Math.sin(sa-w0)*(HR+1));
-      ctx.lineTo(Math.cos(sa-w1)*(RR-1), Math.sin(sa-w1)*(RR-1));
-      ctx.lineTo(Math.cos(sa+w1)*(RR-1), Math.sin(sa+w1)*(RR-1));
-      ctx.lineTo(Math.cos(sa+w0)*(HR+1), Math.sin(sa+w0)*(HR+1));
-      ctx.closePath();
-      const sg=ctx.createLinearGradient(Math.cos(sa)*HR,Math.sin(sa)*HR,Math.cos(sa)*RR,Math.sin(sa)*RR);
-      sg.addColorStop(0,'#d4d4d4'); sg.addColorStop(0.5,'#9a9a9a'); sg.addColorStop(1,'#505050');
-      ctx.fillStyle=sg; ctx.fill();
-      ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=0.3; ctx.stroke();
-      /* dark window */
-      const na=((i+1)/SP)*Math.PI*2;
-      ctx.beginPath();
-      ctx.moveTo(Math.cos(sa+w0)*(HR+2), Math.sin(sa+w0)*(HR+2));
-      ctx.arc(0,0,RR-2,sa+w0,na-w0);
-      ctx.lineTo(Math.cos(na-w0)*(HR+2), Math.sin(na-w0)*(HR+2));
-      ctx.arc(0,0,HR+2,na-w0,sa+w0,true);
-      ctx.closePath(); ctx.fillStyle='#080808'; ctx.fill();
+    
+    // 2. Define Tyre Silhouette Path and Clip to it
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(CX - W/2, CY - H/2, W, H, 5);
+    ctx.clip();
+    
+    // Base solid rubber color
+    ctx.fillStyle = '#111111';
+    ctx.fill();
+    
+    // 3. Draw Cylindrical Horizontal 3D Gradient
+    const shadeG = ctx.createLinearGradient(CX - W/2, 0, CX + W/2, 0);
+    shadeG.addColorStop(0, '#030303');      // Left shoulder curve deep shadow
+    shadeG.addColorStop(0.18, '#242424');   // Left shoulder highlight
+    shadeG.addColorStop(0.35, '#121212');   // Left tread surface
+    shadeG.addColorStop(0.5, '#090909');    // Center channel shadow
+    shadeG.addColorStop(0.65, '#141414');   // Right tread surface
+    shadeG.addColorStop(0.82, '#222222');   // Right shoulder highlight
+    shadeG.addColorStop(1, '#030303');      // Right shoulder curve deep shadow
+    
+    ctx.fillStyle = shadeG;
+    ctx.fillRect(CX - W/2, CY - H/2, W, H);
+    
+    // 4. Draw Twin Center Drainage Grooves (Vertical)
+    ctx.strokeStyle = '#050505';
+    ctx.lineWidth = 1.0;
+    ctx.beginPath();
+    ctx.moveTo(CX - 2, CY - H/2);
+    ctx.lineTo(CX - 2, CY + H/2);
+    ctx.moveTo(CX + 2, CY - H/2);
+    ctx.lineTo(CX + 2, CY + H/2);
+    ctx.stroke();
+    
+    // 5. Draw 3D Rolling Lateral Grooves (Sport Chevrons)
+    const numGrooves = 10;
+    const spacing = (Math.PI * 2) / numGrooves;
+    
+    for (let i = 0; i < numGrooves; i++) {
+      // Angular position of this groove
+      const phi = (i * spacing + spin) % (Math.PI * 2);
+      
+      // Normalize angle to [-PI, PI]
+      const normPhi = Math.atan2(Math.sin(phi), Math.cos(phi));
+      
+      // Only draw if the groove is on the visible top-facing half of the tyre
+      if (Math.abs(normPhi) < Math.PI / 2 + 0.2) {
+        // Center vertex of the chevron
+        const yCenter = CY + Math.sin(normPhi) * R;
+        
+        // Shoulder vertices curved back (creates amazing 3D perspective wrap)
+        const phiShoulder = normPhi - 0.15;
+        const yShoulder = CY + Math.sin(phiShoulder) * R;
+        
+        // Draw Left Half of Chevron
+        ctx.strokeStyle = '#040404';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(CX - W/2, yShoulder);
+        ctx.lineTo(CX - 2, yCenter);
+        ctx.stroke();
+        
+        // Draw Right Half of Chevron
+        ctx.beginPath();
+        ctx.moveTo(CX + W/2, yShoulder);
+        ctx.lineTo(CX + 2, yCenter);
+        ctx.stroke();
+        
+        // Draw 3D Highlight on the edge of the groove (creates volumetric embossing)
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(CX - W/2, yShoulder + 0.8);
+        ctx.lineTo(CX - 2, yCenter + 0.8);
+        ctx.moveTo(CX + W/2, yShoulder + 0.8);
+        ctx.lineTo(CX + 2, yCenter + 0.8);
+        ctx.stroke();
+      }
     }
-
-    /* rim ring */
-    ctx.beginPath(); ctx.arc(0,0,RR,0,Math.PI*2);
-    ctx.strokeStyle='rgba(210,210,210,0.2)'; ctx.lineWidth=0.7; ctx.stroke();
-
-    /* hub */
-    const hg=ctx.createRadialGradient(-1,-1,0.3, 0,0,HR);
-    hg.addColorStop(0,'#f0f0f0'); hg.addColorStop(1,'#686868');
-    ctx.beginPath(); ctx.arc(0,0,HR,0,Math.PI*2); ctx.fillStyle=hg; ctx.fill();
-    for (let i=0;i<5;i++) {
-      const ba=(i/5)*Math.PI*2;
-      ctx.beginPath(); ctx.arc(Math.cos(ba)*(HR-1.1),Math.sin(ba)*(HR-1.1),0.9,0,Math.PI*2);
-      ctx.fillStyle='#444'; ctx.fill();
+    
+    // 6. Draw Tyre Sidewall Decals (Pirelli P-Zero Gold style)
+    const numDecals = 3;
+    const decalSpacing = (Math.PI * 2) / numDecals;
+    for (let i = 0; i < numDecals; i++) {
+      const phi = (i * decalSpacing + spin) % (Math.PI * 2);
+      const normPhi = Math.atan2(Math.sin(phi), Math.cos(phi));
+      
+      if (Math.abs(normPhi) < Math.PI / 2) {
+        const y = CY + Math.sin(normPhi) * R;
+        // Compress height based on the angle to look perfectly 3D
+        const decalHeight = 3.5 * Math.cos(normPhi);
+        
+        if (decalHeight > 0.5) {
+          ctx.fillStyle = '#E5B800'; // Formula 1 style Gold branding
+          
+          // Left sidewall edge brand mark
+          ctx.fillRect(CX - W/2 + 0.4, y - decalHeight / 2, 0.8, decalHeight);
+          
+          // Right sidewall edge brand mark
+          ctx.fillRect(CX + W/2 - 1.2, y - decalHeight / 2, 0.8, decalHeight);
+        }
+      }
     }
-    ctx.beginPath(); ctx.arc(0,0,1.8,0,Math.PI*2); ctx.fillStyle='#D40000'; ctx.fill();
-    ctx.restore();
-
-    /* gloss */
-    const gl=ctx.createRadialGradient(CX-6,CY-6,1,CX-3,CY-3,TR*0.75);
-    gl.addColorStop(0,'rgba(255,255,255,0.09)');
-    gl.addColorStop(1,'rgba(255,255,255,0)');
-    ctx.beginPath(); ctx.arc(CX,CY,TR,0,Math.PI*2); ctx.fillStyle=gl; ctx.fill();
+    
+    // 7. Ambient lighting glare overlay
+    const sheen = ctx.createRadialGradient(CX - 3, CY - H/4, 2, CX, CY, H/2);
+    sheen.addColorStop(0, 'rgba(255, 255, 255, 0.05)');
+    sheen.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = sheen;
+    ctx.fillRect(CX - W/2, CY - H/2, W, H);
+    
+    ctx.restore(); // Restore clipping
+    ctx.restore(); // Restore scaling
   }
 
+  // Initial draw
   drawTyre(0);
 
-  document.addEventListener('mousemove', e => { mouseX=e.clientX; mouseY=e.clientY; });
+  // Track mouse coordinates
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
 
   function loop() {
-    /* snappy-smooth follow */
-    curX = lerp(curX, mouseX, 0.2);
-    curY = lerp(curY, mouseY, 0.2);
+    // Ultra-smooth follower interpolation
+    curX = lerp(curX, mouseX, 0.16);
+    curY = lerp(curY, mouseY, 0.16);
 
     const dx = curX - prevCX;
     const dy = curY - prevCY;
     const dist = Math.sqrt(dx*dx + dy*dy);
 
-    /* steer: face the direction of travel */
-    if (dist > 0.4) {
+    // Dynamic steering heading based on travel vector
+    if (dist > 0.3) {
       targetSteer = Math.atan2(dy, dx) + Math.PI/2;
     }
-    /* smooth steer with shortest-path wrap */
+    
+    // Prevent 360-degree wrapping glitch by finding shortest path
     let diff = targetSteer - steer;
     while (diff >  Math.PI) diff -= Math.PI*2;
     while (diff < -Math.PI) diff += Math.PI*2;
-    steer += diff * 0.13;
+    steer += diff * 0.12; // Butter smooth steering alignment
 
-    /* roll: arc-length / radius */
-    spin += dist / TR;
+    // Roll physical ratio (dist / cylinder radius of 23px)
+    spin -= dist / 23;
 
-    /* position + steer via CSS (GPU composited, zero layout cost) */
+    // Apply high-performance CSS transformation
     canvas.style.left      = (curX - SIZE/2) + 'px';
     canvas.style.top       = (curY - SIZE/2) + 'px';
     canvas.style.transform = `rotate(${steer}rad)`;
 
     drawTyre(spin);
 
-    prevCX = curX; prevCY = curY;
+    prevCX = curX;
+    prevCY = curY;
     requestAnimationFrame(loop);
   }
   loop();
 })();
 
 /* ══════════════════════════════════════════════════
-   VIDEO SCRUBBING
+   BUTTER-SMOOTH SCRUBBING & INTERTIAL SCROLL
 ══════════════════════════════════════════════════ */
 (function () {
   const video      = document.getElementById('ferrari-video');
@@ -470,59 +515,131 @@ nav {
   ];
   const CTA_START = 0.90;
 
-  let duration = 0, videoReady = false;
+  let duration = 0;
+  let videoReady = false;
+  let isSeeking = false;
+  let pendingTime = null;
 
+  function seekVideo(t) {
+    if (!videoReady || duration === 0) return;
+    if (isSeeking) {
+      pendingTime = t;
+      return;
+    }
+    isSeeking = true;
+    video.currentTime = t;
+  }
+
+  video.addEventListener('seeking', () => {
+    isSeeking = true;
+  });
+
+  video.addEventListener('seeked', () => {
+    isSeeking = false;
+    if (pendingTime !== null) {
+      const nextTime = pendingTime;
+      pendingTime = null;
+      seekVideo(nextTime);
+    }
+  });
+
+  // 1. Set up listeners BEFORE loading to prevent race conditions with cache
+  video.addEventListener('loadedmetadata', () => { 
+    duration = video.duration; 
+    videoReady = true; 
+    const t = Math.min(getProgress() / 0.88, 1) * duration;
+    seekVideo(t);
+  });
+  video.addEventListener('canplay', () => { 
+    duration = video.duration; 
+    videoReady = true; 
+  });
+  video.addEventListener('canplaythrough', () => { 
+    duration = video.duration; 
+    videoReady = true; 
+  });
+
+  // 2. Trigger load
   video.preload = 'auto';
   video.load();
-  video.addEventListener('loadedmetadata', () => { duration=video.duration; videoReady=true; video.currentTime=0; });
-  video.addEventListener('canplay',        () => { if(!videoReady){ duration=video.duration; videoReady=true; } });
-  video.addEventListener('canplaythrough', () => { duration=video.duration; videoReady=true; });
 
+  // 3. Fallback active check if already loaded
   const poll = setInterval(() => {
     if (video.readyState >= 1 && video.duration > 0) {
-      duration=video.duration; videoReady=true; clearInterval(poll);
+      duration = video.duration;
+      videoReady = true;
+      clearInterval(poll);
     }
   }, 50);
 
   function getProgress() {
-    const ms = document.getElementById('scroll-track').offsetHeight - window.innerHeight;
+    const track = document.getElementById('scroll-track');
+    if (!track) return 0;
+    const ms = track.offsetHeight - window.innerHeight;
     return ms > 0 ? Math.min(1, Math.max(0, window.scrollY / ms)) : 0;
   }
 
-  function smoothstep(e0,e1,x){
-    const t=Math.max(0,Math.min(1,(x-e0)/(e1-e0)));
-    return t*t*(3-2*t);
+  function smoothstep(e0, e1, x){
+    const t = Math.max(0, Math.min(1, (x - e0) / (e1 - e0)));
+    return t * t * (3 - 2 * t);
   }
 
   function updateLabels(prog) {
-    const F=0.03;
+    const F = 0.03;
     phases.forEach(ph => {
-      const el=document.getElementById(ph.id); if(!el) return;
-      let a=0;
-      if(prog>=ph.start && prog<=ph.end){
-        const fi=smoothstep(ph.start,ph.start+F,prog);
-        const fo=1-smoothstep(ph.end-F,ph.end,prog);
-        a=Math.min(fi,fo);
+      const el = document.getElementById(ph.id);
+      if (!el) return;
+      let a = 0;
+      if (prog >= ph.start && prog <= ph.end) {
+        const fi = smoothstep(ph.start, ph.start + F, prog);
+        const fo = 1 - smoothstep(ph.end - F, ph.end, prog);
+        a = Math.min(fi, fo);
       }
-      el.style.opacity=a;
+      el.style.opacity = a;
     });
   }
 
+  let targetProgress = 0;
+  let currentProgress = 0;
   let lastProg = -1;
+
+  // Active scroll listener updating target progress immediately
+  window.addEventListener('scroll', () => {
+    targetProgress = getProgress();
+  }, { passive: true });
+
   function mainLoop() {
-    const prog = getProgress();
-    if (Math.abs(prog - lastProg) > 0.0001) {
-      lastProg = prog;
-      if (videoReady && duration > 0) {
-        const t = Math.min(prog/0.88,1) * duration;
-        if (Math.abs(video.currentTime - t) > 0.033) video.currentTime = t;
-      }
-      fill.style.width = (prog*100).toFixed(2)+'%';
-      updateLabels(prog);
-      hint.style.opacity = prog > 0.03 ? '0' : '1';
-      if (prog >= CTA_START) ctaOverlay.classList.add('visible');
-      else ctaOverlay.classList.remove('visible');
+    // Ultra smooth inertial lerp for progress values (balanced for instant, high-sensitivity but buttery response)
+    currentProgress = currentProgress + (targetProgress - currentProgress) * 0.09;
+    
+    // Snap close values to prevent tiny calculations
+    if (Math.abs(targetProgress - currentProgress) < 0.0001) {
+      currentProgress = targetProgress;
     }
+
+    // Always keep video currentTime synchronized with currentProgress when ready
+    if (videoReady && duration > 0) {
+      const t = Math.min(currentProgress / 0.88, 1) * duration;
+      if (Math.abs(video.currentTime - t) > 0.01) {
+        seekVideo(t);
+      }
+    }
+
+    if (Math.abs(currentProgress - lastProg) > 0.0001) {
+      lastProg = currentProgress;
+      
+      fill.style.width = (currentProgress * 100).toFixed(2) + '%';
+      updateLabels(currentProgress);
+      
+      hint.style.opacity = currentProgress > 0.03 ? '0' : '1';
+      
+      if (currentProgress >= CTA_START) {
+        ctaOverlay.classList.add('visible');
+      } else {
+        ctaOverlay.classList.remove('visible');
+      }
+    }
+    
     requestAnimationFrame(mainLoop);
   }
   mainLoop();
